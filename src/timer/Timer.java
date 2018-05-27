@@ -24,8 +24,11 @@ public class Timer {
         // TODO code application logic here
         frame timer = new frame();
         timer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        timer.setSize(800, 450);
+        timer.setSize(400,600);
+        timer.setLocationRelativeTo(null);
         timer.setVisible(true);
+        
+        
         
 
     } 

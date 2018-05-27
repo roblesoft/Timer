@@ -75,7 +75,9 @@ public class frame extends JFrame{
     private JLabel minPM;
     private JButton ok;
     
-    //private AudioClip sonido = new java.applet.Applet.(getClass().getResource(""));
+    private JPanel panelDeBotones;
+    private JButton lista;
+    private JButton pomod;
 
     private int h, cs, m, s;
     
@@ -95,13 +97,19 @@ public class frame extends JFrame{
     private ResultSet conjuntoResultados;
     private Statement instruccion; 
     
+    
+    
+    
     private ArrayList<JPanel> listaTareas = new ArrayList<JPanel>();
     
     public frame(){
         //Preferencias del frame
         super("TIMER");
-        setLayout(new GridLayout(1, 2 ));
+        setLayout(null);
         //------------------------------
+        Icon imgPomo = new ImageIcon( getClass().getResource( "/timer/tomate.png" ) );
+        Icon imgList = new ImageIcon( getClass().getResource( "/timer/lista.png" ) );
+        Icon imgCrear = new ImageIcon( getClass().getResource( "/timer/pen.png" ) );
         
          t = new Timer(10, acciones);
         //Inicializaciom de variables
@@ -125,7 +133,7 @@ public class frame extends JFrame{
         corto           = new JButton("Break Corto");
         largo           = new JButton("Break Largo");
         configuracion   = new JButton("Configuracion");
-        agregarTarea    = new JButton("Agregar tarea");
+        agregarTarea    = new JButton(imgCrear);
         nuevaTarea      = new JFrame("Nueva tarea");
         enviar          = new JButton("Crear");
         nombreDeTarea   = new JTextField("");
@@ -144,6 +152,9 @@ public class frame extends JFrame{
         minBL           = new JLabel("minutos para el break largo");
         minPM           = new JLabel("minutos para el pomodoro");
         ok              = new JButton("Ok");
+        panelDeBotones  = new JPanel();
+        pomod           = new JButton(imgPomo);
+        lista           = new JButton(imgList);
         
         
         
@@ -170,21 +181,21 @@ public class frame extends JFrame{
         
         
         //Configuracion del titulo del panel izquierdo
-        pomodoro.setBounds(155, 30, 250, 30);
+        pomodoro.setBounds(155, 50, 250, 30);
         pomodoro.setFont(fuente);
-        reloj.setBounds(90, 70, 300, 80);
+        reloj.setBounds(90, 90, 300, 80);
         reloj.setFont(new Font("sans_serif", Font.PLAIN, 80));
-        play.setBounds( 115, 160, 50, 50);
+        play.setBounds( 115, 190, 50, 50);
         play.addActionListener(new Start());
-        pause.setBounds(245, 160, 50, 50);
+        pause.setBounds(245, 190, 50, 50);
         pause.addActionListener(new Stop());
-        pomo.setBounds( 125, 230, 160, 30);
+        pomo.setBounds( 125, 270, 160, 30);
         pomo.addActionListener(new Pomo());
-        corto.setBounds( 125, 270, 160, 30);
+        corto.setBounds( 125, 320, 160, 30);
         corto.addActionListener(new BreakCorto());
-        largo.setBounds( 125, 310, 160, 30);
+        largo.setBounds( 125, 370, 160, 30);
         largo.addActionListener(new BreakLargo());
-        configuracion.setBounds( 125, 350, 160, 30);
+        configuracion.setBounds( 125, 415, 160, 30);
         configuracion.addActionListener(new Configuracion());
         //-----------------------------
         
@@ -192,6 +203,7 @@ public class frame extends JFrame{
         //Configuracion del panel izquierdo
         panelIzquierdo.setBorder(  BorderFactory.createEtchedBorder(1));
         panelIzquierdo.setLayout(null);
+        panelIzquierdo.setBounds(0, 0, 400, 500);
         panelIzquierdo.add(pomodoro);
         panelIzquierdo.add(reloj);
         panelIzquierdo.add(play);
@@ -243,22 +255,29 @@ public class frame extends JFrame{
         panelTareas.setLayout(null);
         panelTareas.setPreferredSize( new Dimension(350, 380));
         panelTareas.add(workList);
-        panelTareas.add(agregarTarea);
         //-----------------------------
         
         //Configuracion del panel derecho
         //panelDerecho.setBorder(  BorderFactory.createLoweredBevelBorder());
         panelDerecho.setLayout(new GridLayout(1, 1));
         panelDerecho.add(new JScrollPane(panelTareas));
+        panelDerecho.setBounds(0, 0, 400, 500);
         //-----------------------------
         
-        //Agregar al frame
-        men.setMnemonic(KeyEvent.VK_A);
-        men.getAccessibleContext().setAccessibleDescription(
-        "The only menu in this program that has menu items");
-        JMenuItem menuItem = new JMenuItem("Ayuda",
-                         KeyEvent.VK_T);
         
+        //configuracion panel de botones
+        panelDeBotones.setLayout(new GridLayout(1, 3));
+        panelDeBotones.setBounds(0, 500, 400, 52);
+        pomod.addActionListener(new Pomodoro());
+        
+        lista.addActionListener(new Lista());
+        panelDeBotones.add(pomod);
+        panelDeBotones.add(agregarTarea);
+        panelDeBotones.add(lista);
+        
+        
+        //Agregar al frame
+       
         men2.setMnemonic(KeyEvent.VK_A);
         men2.getAccessibleContext().setAccessibleDescription(
         "The only menu in this program that has menu items");
@@ -267,17 +286,15 @@ public class frame extends JFrame{
         menuItem2.addActionListener(new Ayuda());
         menuItem2.setAccelerator(KeyStroke.getKeyStroke(
         KeyEvent.VK_2, ActionEvent.ALT_MASK));
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        KeyEvent.VK_1, ActionEvent.ALT_MASK));
-        menuItem.addActionListener(new Instrucciones());
+
         
-        men2.add(menuItem);
+       
         men.add(menuItem2);
-        menu.add(men2);
+        
         menu.add(men);
         setJMenuBar(menu);
         
-        add(panelIzquierdo);
+        add(panelDeBotones);
         add(panelDerecho);
         //-----------------------------
 
@@ -361,8 +378,8 @@ public class frame extends JFrame{
     
     private void refresh(){
         try {
-            int y = -50;
-            int mas = 160;
+            int y = -90;
+            int mas = 140;
 
             Class.forName(driver);
             conn = DriverManager.getConnection( "jdbc:postgresql://localhost:5432/postgres", username, password);
@@ -473,7 +490,7 @@ public class frame extends JFrame{
         public void actionPerformed(ActionEvent evento){
             reiniciar();
             pomodoro.setText("Break corto");
-            pomodoro.setBounds(150, 30, 250, 30);
+            pomodoro.setBounds(155, 50, 250, 30);
             limite = limiteBC;
         }
     }
@@ -481,7 +498,7 @@ public class frame extends JFrame{
         @Override
         public void actionPerformed(ActionEvent evento){
             pomodoro.setText("Break largo");
-            pomodoro.setBounds(150, 30, 250, 30);
+            pomodoro.setBounds(155, 50, 250, 30);
             reiniciar();
             limite = limiteBL;
         }
@@ -491,7 +508,7 @@ public class frame extends JFrame{
         @Override
         public void actionPerformed(ActionEvent evento){
             pomodoro.setText("Pomodoro");
-            pomodoro.setBounds(155, 30, 250, 30);
+            pomodoro.setBounds(155, 50, 250, 30);
             reiniciar();
             limite = limitePD;
         }
@@ -532,15 +549,36 @@ public class frame extends JFrame{
     class Ayuda implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent evento){
-            JOptionPane.showMessageDialog(null, "La tecnica pomodoro");
+            JOptionPane.showMessageDialog(null, "La Técnica Pomodoro es un método para mejorar la administración \n "
+                    + "del tiempo dedicado a una actividad.\n"
+                    + "Fue desarrollado por Francesco Cirillo a fines de la década de 1980.\n"
+                    + "Se usa un temporizador para dividir el tiempo en intervalos indivisibles,\n"
+                    + "llamados pomodoros, de 25 minutos de actividad, seguidos de 5 minutos de descanso, \n"
+                    + "con pausas más largas cada cuatro pomodoros.");
+
         }
     }
     
-    class Instrucciones implements ActionListener{
+    class Pomodoro implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent evento){
-            JOptionPane.showMessageDialog(null, "Agrega una tarea");
+            remove(panelDerecho);
+            repaint();
+            add(panelIzquierdo);
+            panelIzquierdo.updateUI();
+            repaint();
         }
     }
+        class Lista implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent evento){
+            remove(panelIzquierdo);
+            repaint();
+            add(panelDerecho);
+            panelIzquierdo.updateUI();
+            repaint();
+        }
+    }
+    
 
 }
