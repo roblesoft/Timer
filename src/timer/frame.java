@@ -9,13 +9,8 @@ import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.Map;
 import javax.swing.Timer;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.AudioSystem;
-import java.io.File;
 
 
 
@@ -95,17 +90,15 @@ public class frame extends JFrame{
     private PreparedStatement eliminar;
     private PreparedStatement actualizar;
     private ResultSet conjuntoResultados;
-    private Statement instruccion; 
-    
-    
-    
-    
+    private Statement instruccion;
     private ArrayList<JPanel> listaTareas = new ArrayList<JPanel>();
     
     public frame(){
         //Preferencias del frame
         super("TIMER");
         setLayout(null);
+        m = 25;
+        cs = 100;
         //------------------------------
         Icon imgPomo = new ImageIcon( getClass().getResource( "/timer/tomate.png" ) );
         Icon imgList = new ImageIcon( getClass().getResource( "/timer/lista.png" ) );
@@ -126,7 +119,7 @@ public class frame extends JFrame{
         panelTareas     = new JPanel();
         pomodoro        = new JLabel("Pomodoro");
         workList        = new JLabel("Worklist");
-        reloj           = new JLabel("00:00");
+        reloj           = new JLabel("25:00");
         play            = new JButton("►");
         pause           = new JButton("||");
         pomo            = new JButton("Pomodoro");
@@ -168,6 +161,9 @@ public class frame extends JFrame{
         minbl.setBounds(100, 110, 50, 30);
         minPM.setBounds(25, 140, 210, 20);
         minpm.setBounds(100, 170, 50, 30);
+        minbr.setSelectedIndex(4);
+        minbl.setSelectedIndex(14);
+        minpm.setSelectedIndex(24);
         ok.setBounds(90, 210, 70, 35);
         ok.addActionListener(new Ok());
         configuracionF.add(minbr);
@@ -444,30 +440,27 @@ public class frame extends JFrame{
     private ActionListener acciones = new ActionListener(){
         @Override
         public void actionPerformed(ActionEvent evento){
-            ++cs; 
-            if(cs == 100){
-                cs = 0;
-                ++s;
+            --cs; 
+            if(cs == -1){
+                cs = 99;
+                --s;
             }
-            if(s == 60){
-                s = 0;
-                ++m;
-            }
-            if( m == 60){
-                m = 0;
-                ++h;
-            }
+            if(s == -1){       
+                
+                if(m == 0 && s == -1){
+                    t.stop();
+                    reiniciar();
+                    sonido();
+                }else{
+                    s = 59;
+                    --m;
+                }       
+            }  
             actualizarLabel();
-            if(m == limite){
-           
-                t.stop();
-                sonido();
-            }
-        }
-        
+        } 
     };
     private void actualizarLabel() {
-        String tiempo = (m<=9?"0":"")+m+":"+(s<=9?"0":"")+s;
+        String tiempo = (m<=9 ? "0" : "") + m + ":" + (s<=9 ? "0" : "") + s;
         reloj.setText(tiempo);
     }
     
@@ -488,29 +481,37 @@ public class frame extends JFrame{
     class BreakCorto implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent evento){
-            reiniciar();
+            
             pomodoro.setText("Break corto");
             pomodoro.setBounds(155, 50, 250, 30);
+            m = limiteBC;
             limite = limiteBC;
+            reiniciar();
         }
     }
     class BreakLargo implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent evento){
+            
             pomodoro.setText("Break largo");
             pomodoro.setBounds(155, 50, 250, 30);
-            reiniciar();
+            
+            m = limiteBL;
             limite = limiteBL;
+            reiniciar();
         }
-    }
+    } 
     
     class Pomo implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent evento){
+            
             pomodoro.setText("Pomodoro");
             pomodoro.setBounds(155, 50, 250, 30);
-            reiniciar();
+            
+            m = limitePD;
             limite = limitePD;
+            reiniciar();
         }
     }
     
@@ -521,12 +522,12 @@ public class frame extends JFrame{
         }
     }
     public void reiniciar(){
-        String tiempo = "00:00";
+        String tiempo = (limite<=9?"0":"") + limite + ":00";
         reloj.setText(tiempo);
         h = 0;
-        m = 0;
+        m = limite;
         s = 0;
-        cs = 0;
+        cs = 100;
         t.stop();
     }
     
@@ -563,7 +564,6 @@ public class frame extends JFrame{
         @Override
         public void actionPerformed(ActionEvent evento){
             remove(panelDerecho);
-            repaint();
             add(panelIzquierdo);
             panelIzquierdo.updateUI();
             repaint();
@@ -573,7 +573,6 @@ public class frame extends JFrame{
         @Override
         public void actionPerformed(ActionEvent evento){
             remove(panelIzquierdo);
-            repaint();
             add(panelDerecho);
             panelIzquierdo.updateUI();
             repaint();

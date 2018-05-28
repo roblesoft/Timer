@@ -4,13 +4,7 @@
  * and open the template in the editor.
  */
 package timer;
-import java.applet.AudioClip;
-import java.io.File;
-import java.sql.*;
 import javax.swing.JFrame;
-import java.util.ArrayList;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 
 /**
  *
@@ -27,9 +21,5 @@ public class Timer {
         timer.setSize(400,600);
         timer.setLocationRelativeTo(null);
         timer.setVisible(true);
-        
-        
-        
-
     } 
 }
