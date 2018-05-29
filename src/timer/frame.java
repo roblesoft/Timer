@@ -392,7 +392,7 @@ public class frame extends JFrame{
                 JPanel tarea = new JPanel();
 
                 tarea.setLayout(null);
-                tarea.setBorder(  BorderFactory.createEtchedBorder(1));
+                tarea.setBorder(  BorderFactory.createEtchedBorder(1) );
 
                 JLabel titulo = new JLabel(String.format("%s", conjuntoResultados.getObject(1)));
                 String funteE = String.format("%s", conjuntoResultados.getObject(4));
